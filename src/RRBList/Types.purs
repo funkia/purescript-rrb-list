@@ -1,4 +1,4 @@
-module Funkia.List.Types (List) where
+module RRBList.Types (List) where
 
 import Data.Foldable (class Foldable, foldMapDefaultR)
 import Data.Function.Uncurried (Fn0, Fn2, Fn3, Fn4, Fn6, mkFn2, runFn0, runFn2, runFn3, runFn4, runFn6)
