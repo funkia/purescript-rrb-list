@@ -53,7 +53,9 @@ module RRBList
   , insertAt
   , deleteAt
   , updateAt
+  , updateAtIndices
   , modifyAt
+  , modifyAtIndices 
   , alterAt
 
   , reverse
@@ -119,7 +121,7 @@ import Data.Monoid (mempty)
 import Data.NonEmpty (NonEmpty, (:|))
 import Data.Traversable (scanl, scanr) as Exports
 import Data.Traversable (sequence, traverse)
-import Data.Tuple (Tuple(Tuple), fst, snd)
+import Data.Tuple (Tuple(Tuple), fst, snd, uncurry)
 import Data.Unfoldable (class Unfoldable, unfoldr)
 import Partial.Unsafe (unsafePartial)
 
@@ -345,12 +347,28 @@ updateAt = dischargeNillable (>=) $ runFn3 _updateAt
 
 foreign import _updateAt :: forall a. Fn3 Int a (List a) (List a)
 
+-- | Change the elements at the specified indices in index/value pairs.
+-- | Out-of-bounds indices will have no effect.
+-- |
+-- | Running time: `O(m * log(n))`, where `m` is the number of indices
+-- | and `n` is the length of the list.
+updateAtIndices :: forall t a. Foldable t => t (Tuple Int a) -> List a -> List a
+updateAtIndices us xs = foldr (uncurry $ runFn3 _updateAt) xs us
+
 -- | Apply a function to the element at the specified index, creating a new
 -- | list, or returning `Nothing` if the index is out of bounds.
 modifyAt :: forall a. Int -> (a -> a) -> List a -> Maybe (List a)
 modifyAt = dischargeNillable (>=) $ runFn3 _modifyAt
 
 foreign import _modifyAt :: forall a. Fn3 Int (a -> a) (List a) (List a)
+
+-- | Apply a function to the element at the specified indices,
+-- | creating a new array. Out-of-bounds indices will have no effect.
+-- |
+-- | Running time: `O(m * log(n))`, where `m` is the number of indices
+-- | and `n` is the length of the list.
+modifyAtIndices :: forall t a. Foldable t => t Int -> (a -> a) -> List a -> List a
+modifyAtIndices is f xs = foldr (flip (runFn3 _modifyAt) f) xs is
 
 -- Wrap "total" functions that return empty lists in response to "invalid" input in a Maybe
 dischargeNillable
