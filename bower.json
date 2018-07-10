@@ -17,19 +17,18 @@
     "psc-package.json"
   ],
   "dependencies": {
-    "purescript-console": "^3.0.0",
-    "purescript-foldable-traversable": "^3.7.1",
-    "purescript-functions": "^3.0.0",
-    "purescript-maybe": "^3.0.0",
-    "purescript-monoid": "^3.3.0",
-    "purescript-nonempty": "^4.3.0",
-    "purescript-partial": "^1.2.1",
-    "purescript-prelude": "^3.1.1",
-    "purescript-tailrec": "^3.3.0",
-    "purescript-tuples": "^4.1.0",
-    "purescript-unfoldable": "^3.1.0"
+    "purescript-console": "^4.1.0",
+    "purescript-foldable-traversable": "^4.0.0",
+    "purescript-functions": "^4.0.0",
+    "purescript-maybe": "^4.0.0",
+    "purescript-nonempty": "^5.0.0",
+    "purescript-partial": "^2.0.0",
+    "purescript-prelude": "^4.0.1",
+    "purescript-tailrec": "^4.0.0",
+    "purescript-tuples": "^5.0.0",
+    "purescript-unfoldable": "^4.0.0"
   },
   "devDependencies": {
-    "purescript-psci-support": "^3.0.0"
+    "purescript-psci-support": "^4.0.0"
   }
 }

@@ -117,7 +117,6 @@ import Data.Foldable (class Foldable, foldl, foldr)
 import Data.Foldable (foldl, foldr, foldMap, fold, intercalate, elem, notElem, find, findMap, any, all) as Exports
 import Data.Function.Uncurried (Fn2, Fn3, mkFn2, runFn2, runFn3)
 import Data.Maybe (Maybe(..), fromJust, isJust, maybe)
-import Data.Monoid (mempty)
 import Data.NonEmpty (NonEmpty, (:|))
 import Data.Traversable (scanl, scanr) as Exports
 import Data.Traversable (sequence, traverse)
@@ -438,7 +437,7 @@ mapMaybe f = concatMap (maybe mempty pure <<< f)
 -- | Filter a list of optional values, keeping only the elements which contain
 -- | a value, creating a new list.
 catMaybes :: forall a. List (Maybe a) -> List a
-catMaybes = mapMaybe id
+catMaybes = mapMaybe identity
 
 -- | Apply a function to each element in a list, supplying a generated
 -- | zero-based index integer along with the element, creating a list

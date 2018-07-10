@@ -53,6 +53,21 @@ exports._show = function (f, xs) {
   return "fromFoldable [" + L.join(", ", L.map(f, xs)) + "]";
 };
 
+exports._unfoldr1 = function (isNothing, fromJust, fst, snd, f, b) {
+  var result = L.empty();
+  var value = b;
+  while (true) { // eslint-disable-line no-constant-condition
+    var pair = f(value);
+    result = L.append(fst(pair), result);
+    var next = snd(pair);
+    if (isNothing(next)) {
+      return result;
+    } else {
+      value = fromJust(next);
+    }
+  }
+};
+
 exports._unfoldr = function (isNothing, fromJust, fst, snd, f, b) {
   var result = L.empty();
   var value = b;
