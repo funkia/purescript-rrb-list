@@ -137,24 +137,34 @@ toUnfoldable xs = unfoldr f 0
     | otherwise = Nothing
 
 -- | Convert a `Foldable` structure into an `List`.
+-- |
+-- | Running time: `O(n)`.
 fromFoldable :: forall f. Foldable f => f ~> List
 fromFoldable = foldr cons mempty
 
 -- | Create a list of zero elements
+-- |
+-- | Running time: `O(1)`.
 nil :: forall a. List a
 nil = mempty
 
 -- | Create a list of one element
+-- |
+-- | Running time: `O(1)`.
 singleton :: forall a. a -> List a
 singleton = pure
 
 -- | Create a list containing a range of integers, including both endpoints.
+-- |
+-- | Running time: `O(n)`.
 range :: Int -> Int -> List Int
 range = runFn2 _range
 
 foreign import _range :: Fn2 Int Int (List Int)
 
 -- | Create a list containing a value repeated the specified number of times.
+-- |
+-- | Running time: `O(n)`.
 replicate :: forall a. Int -> a -> List a
 replicate = runFn2 _replicate
 
@@ -183,6 +193,8 @@ many v = some v <|> pure mempty
 --------------------------------------------------------------------------------
 
 -- | Test whether a list is empty.
+-- |
+-- | Running time: `O(1)`.
 null :: forall a. List a -> Boolean
 null xs = length xs == 0
 
@@ -195,7 +207,7 @@ foreign import length :: forall a. List a -> Int
 
 -- | Attaches an element to the front of a list.
 -- |
--- | Note, the running time of this function is `O(log(n))`, practically constant.
+-- | Running time: `O(1)`.
 cons :: forall a. a -> List a -> List a
 cons = runFn2 _cons
 
@@ -208,7 +220,7 @@ infixr 6 cons as :
 
 -- | Append an element to the end of a list.
 -- |
--- | Note, the running time of this function is `O(log(n))`, practically constant.
+-- | Running time: `O(1)`.
 snoc :: forall a. List a -> a -> List a
 snoc = runFn2 _snoc
 
@@ -269,6 +281,8 @@ dischargeUnsafe f xs
   | otherwise = Just $ unsafePartial (f xs)
 
 -- | Break a list into its first element and remaining elements.
+-- |
+-- | Running time: `O(1)`
 uncons :: forall a. List a -> Maybe { head :: a, tail :: List a }
 uncons = uncons' (const Nothing) \head' tail' -> Just { head: head', tail: tail' }
 
@@ -284,7 +298,7 @@ uncons' done next xs
 
 -- | Break a list into its last element and all preceding elements.
 -- |
--- | Running time: `O(n)` where `n` is the length of the array
+-- | Running time: `O(1)`
 unsnoc :: forall a. List a -> Maybe { init :: List a, last :: a }
 unsnoc xs = { init: _, last: _ } <$> init xs <*> last xs
 
@@ -294,6 +308,8 @@ unsnoc xs = { init: _, last: _ } <$> init xs <*> last xs
 
 -- | This function provides a safe way to read a value at a particular index
 -- | from a list.
+-- |
+-- | Running time: `O(log(n))`, effectively constant.
 index :: forall a. List a -> Int -> Maybe a
 index xs i
   | i < 0 || i >= length xs = Nothing
@@ -303,6 +319,8 @@ index xs i
 infixl 8 index as !!
 
 -- | Find the index of the first element equal to the specified element.
+-- |
+-- | Running time: `O(i)`, where `i` is the index of the element.
 elemIndex :: forall a. Eq a => a -> List a -> Maybe Int
 elemIndex x = findIndex (_ == x)
 
@@ -327,6 +345,8 @@ findLastIndex f = findIndex f <<< reverse
 -- |
 -- | If the specified index is one greater than the length of the list,
 -- | the element is appended
+-- |
+-- | Running time: `O(log(n))`.
 insertAt :: forall a. Int -> a -> List a -> Maybe (List a)
 insertAt = dischargeNillable (>) $ runFn3 _insertAt
 
@@ -334,6 +354,8 @@ foreign import _insertAt :: forall a. Fn3 Int a (List a) (List a)
 
 -- | Delete the element at the specified index, creating a new list, or
 -- | returning `Nothing` if the index is out of bounds.
+-- |
+-- | Running time: `O(log(n))`.
 deleteAt :: forall a. Int -> List a -> Maybe (List a)
 deleteAt i = (dischargeNillable (>=) $ runFn3 remove) i 1
 
@@ -341,6 +363,8 @@ foreign import remove :: forall a. Fn3 Int Int (List a) (List a)
 
 -- | Change the element at the specified index, creating a new list, or
 -- | returning `Nothing` if the index is out of bounds.
+-- |
+-- | Running time: `O(log(n))`.
 updateAt :: forall a. Int -> a -> List a -> Maybe (List a)
 updateAt = dischargeNillable (>=) $ runFn3 _updateAt
 
@@ -356,6 +380,8 @@ updateAtIndices us xs = foldr (uncurry $ runFn3 _updateAt) xs us
 
 -- | Apply a function to the element at the specified index, creating a new
 -- | list, or returning `Nothing` if the index is out of bounds.
+-- |
+-- | Running time: `O(log(n))`.
 modifyAt :: forall a. Int -> (a -> a) -> List a -> Maybe (List a)
 modifyAt = dischargeNillable (>=) $ runFn3 _modifyAt
 
@@ -402,13 +428,18 @@ foreign import reverse :: forall a. List a -> List a
 -- | Flatten a list of lists, creating a new list.
 foreign import concat :: forall a. List (List a) -> List a
 
--- | Apply a function to each element in a list, and flatten the results
--- | into a single, new list.
+-- | Apply a function to each element in a list, and flatten the
+-- | results into a single, new list.
+-- |
+-- | Running time: `O(n*log(m)`, where `n` is the length of the given
+-- | list and `m` is the length of the lists returned by the function.
 concatMap :: forall a b. (a -> List b) -> List a -> List b
 concatMap = flip bind
 
--- | Filter a list, keeping the elements which satisfy a predicate function,
--- | creating a new list.
+-- | Filter a list, keeping the elements which satisfy a predicate
+-- | function, creating a new list.
+-- |
+-- | Running time: `O(n)`
 filter :: forall a. (a -> Boolean) -> List a -> List a
 filter = runFn2 _filter
 
@@ -451,11 +482,15 @@ mapWithIndex f xs =
 --------------------------------------------------------------------------------
 
 -- | Sort the elements of a list in increasing order, creating a new list.
+-- |
+-- | Running time: `O(n*log(n))`.
 sort :: forall a. Ord a => List a -> List a
 sort xs = sortBy compare xs
 
 -- | Sort the elements of a list in increasing order, where elements are
 -- | compared using the specified partial ordering, creating a new list.
+-- |
+-- | Running time: `O(n*log(n))`.
 sortBy :: forall a. (a -> a -> Ordering) -> List a -> List a
 sortBy comp xs = runFn2 _sortBy comp' xs
   where
@@ -468,6 +503,8 @@ foreign import _sortBy :: forall a. Fn2 (Fn2 a a Int) (List a) (List a)
 
 -- | Sort the elements of a list in increasing order, where elements are
 -- | sorted based on a projection
+-- |
+-- | Running time: `O(n*log(n))`.
 sortWith :: forall a b. Ord b => (a -> b) -> List a -> List a
 sortWith = runFn2 _sortWith
 
@@ -478,6 +515,8 @@ foreign import _sortWith :: forall a b. Fn2 (a -> b) (List a) (List a)
 --------------------------------------------------------------------------------
 
 -- | Extract a sublist by a start and end index.
+-- |
+-- | Running time: `O(log(n))`.
 slice :: forall a. Int -> Int -> List a -> List a
 slice = runFn3 _slice
 
@@ -561,6 +600,8 @@ groupBy op xs = toNonEmpty <$> (runFn2 _groupBy (mkFn2 op) xs)
 foreign import _groupBy :: forall a. Fn2 (Fn2 a a Boolean) (List a) (List (List a))
 
 -- | Remove the duplicates from a list, creating a new list.
+-- |
+-- | Running time: `O(n)`.
 nub :: forall a. Eq a => List a -> List a
 nub = nubBy eq
 
@@ -582,6 +623,8 @@ union = unionBy (==)
 -- | Calculate the union of two lists, using the specified function to
 -- | determine equality of elements. Note that duplicates in the first list
 -- | are preserved while duplicates in the second list are removed.
+-- |
+-- | Running time: `O(n^2)`.
 unionBy :: forall a. (a -> a -> Boolean) -> List a -> List a -> List a
 unionBy eq xs ys = xs <> foldl (flip (deleteBy eq)) (nubBy eq ys) xs
 
@@ -595,6 +638,8 @@ delete = deleteBy eq
 -- | Delete the first element of a list which matches the specified value,
 -- | under the equivalence relation provided in the first argument, creating a
 -- | new list.
+-- |
+-- | Running time: `O(n)`.
 deleteBy :: forall a. (a -> a -> Boolean) -> a -> List a -> List a
 deleteBy eq x ys
   | null ys = mempty
@@ -613,6 +658,8 @@ infix 5 difference as \\
 -- | Calculate the intersection of two lists, creating a new list. Note that
 -- | duplicates in the first list are preserved while duplicates in the second
 -- | list are removed.
+-- |
+-- | Running time: `O(n*m)`.
 intersect :: forall a. Eq a => List a -> List a -> List a
 intersect = intersectBy eq
 
@@ -620,6 +667,8 @@ intersect = intersectBy eq
 -- | relation to compare elements, creating a new list. Note that duplicates
 -- | in the first list are preserved while duplicates in the second list are
 -- | removed.
+-- |
+-- | Running time: `O(n*m)`.
 intersectBy :: forall a. (a -> a -> Boolean) -> List a -> List a -> List a
 intersectBy eq xs ys = filter (\x -> isJust (findIndex (eq x) ys)) xs
 
@@ -627,6 +676,8 @@ intersectBy eq xs ys = filter (\x -> isJust (findIndex (eq x) ys)) xs
 -- | collecting the results in a new list.
 -- |
 -- | If one list is longer, elements will be discarded from the longer list.
+-- |
+-- | Running time: `O(n)`.
 zipWith :: forall a b c. (a -> b -> c) -> List a -> List b -> List c
 zipWith = runFn3 _zipWith <<< mkFn2
 
@@ -634,6 +685,8 @@ foreign import _zipWith :: forall a b c. Fn3 (Fn2 a b c) (List a) (List b) (List
 
 -- | A generalization of `zipWith` which accumulates results in some
 -- | `Applicative` functor.
+-- |
+-- | Running time: `O(n)`.
 zipWithA
   :: forall m a b c
    . Applicative m
@@ -646,11 +699,15 @@ zipWithA f xs ys = sequence (zipWith f xs ys)
 -- | Takes two lists and returns an list of corresponding pairs.
 -- | If one input list is short, excess elements of the longer list are
 -- | discarded.
+-- |
+-- | Running time: `O(n)`.
 zip :: forall a b. List a -> List b -> List (Tuple a b)
 zip = zipWith Tuple
 
 -- | Transforms a list of pairs into a list of first components and a
 -- | list of second components.
+-- |
+-- | Running time: `O(n)`.
 unzip :: forall a b. List (Tuple a b) -> Tuple (List a) (List b)
 unzip xs = Tuple (fst <$> xs) (snd <$> xs)
 
@@ -677,6 +734,8 @@ foldRecM f a xs = tailRecM2 go a 0
 -- | the expression `unsafePartial (unsafeIndex (singleton true) 1)` has type `Boolean`;
 -- | since this expression evaluates to `undefined`, attempting to use it in an `if` statement will cause
 -- | the else branch to be taken.
+-- |
+-- | Running time: `O(log(n))`, effectively constant.
 unsafeIndex :: forall a. Partial => List a -> Int -> a
 unsafeIndex = runFn2 _unsafeIndex
 
