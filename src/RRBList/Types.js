@@ -75,7 +75,7 @@ exports._unfoldr = function (isNothing, fromJust, fst, snd, f, b) {
     var maybe = f(value);
     if (isNothing(maybe)) return result;
     var tuple = fromJust(maybe);
-    result.push(fst(tuple));
+    result = L.append(fst(tuple), result);
     value = snd(tuple);
   }
 };

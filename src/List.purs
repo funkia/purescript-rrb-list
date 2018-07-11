@@ -55,7 +55,7 @@ module RRBList
   , updateAt
   , updateAtIndices
   , modifyAt
-  , modifyAtIndices 
+  , modifyAtIndices
   , alterAt
 
   , reverse
