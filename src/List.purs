@@ -712,12 +712,12 @@ unzip :: forall a b. List (Tuple a b) -> Tuple (List a) (List b)
 unzip xs = Tuple (fst <$> xs) (snd <$> xs)
 
 -- | Perform a fold using a monadic step function.
-foldM :: forall m a b. Monad m => (a -> b -> m a) -> a -> List b -> m a
-foldM f a = uncons' (\_ -> pure a) (\b bs -> f a b >>= \a' -> foldM f a' bs)
+foldM :: forall m a b. Monad m => (b -> a -> m b) -> b -> List a -> m b
+foldM f b = uncons' (\_ -> pure b) (\a as -> f b a >>= \b' -> foldM f b' as)
 
 
-foldRecM :: forall m a b. MonadRec m => (a -> b -> m a) -> a -> List b -> m a
-foldRecM f a xs = tailRecM2 go a 0
+foldRecM :: forall m a b. MonadRec m => (b -> a -> m b) -> b -> List a -> m b
+foldRecM f b xs = tailRecM2 go b 0
   where
   go res i
     | i >= length xs = pure (Done res)
