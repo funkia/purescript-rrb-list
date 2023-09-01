@@ -7,6 +7,7 @@ in conf // {
       , "aff"
       , "effect"
       , "arrays"
+      , "profunctor-lenses"
       , "quickcheck"
       ]
 }

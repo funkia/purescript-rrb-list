@@ -7,7 +7,6 @@
   , "nonempty"
   , "partial"
   , "prelude"
-  , "profunctor-lenses"
   , "tailrec"
   , "tuples"
   , "unfoldable"
