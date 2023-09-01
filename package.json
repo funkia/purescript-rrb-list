@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "spago test --purs-args \"--strict --stash\"",
+    "test": "spago -x test.dhall test --purs-args \"--strict --stash\"",
     "build": "spago build --purs-args \"--strict --stash\""
   },
   "author": "Gabe Johnson",
@@ -16,7 +16,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "list": "^2.0.x"
+    "list": "2.0.19"
   },
   "private": true,
   "devDependencies": {
