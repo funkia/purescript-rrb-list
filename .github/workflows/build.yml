@@ -1,10 +1,8 @@
 name: build-rrb-list
-
 run-name: build-rrb-list
-
 on: [push]
-  jobs:
-  build-library:
+jobs:
+  build-rrb-list-library:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
