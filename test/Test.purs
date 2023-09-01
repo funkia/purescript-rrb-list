@@ -6,7 +6,6 @@ import Data.Array as A
 import Data.Lens (Iso', iso, review, view)
 import Data.Maybe (Maybe(..))
 import Data.RRBList as L
-import Data.Tuple (Tuple)
 import Data.Tuple.Nested ((/\), type (/\))
 import Data.Unfoldable (replicate)
 import Effect (Effect)
