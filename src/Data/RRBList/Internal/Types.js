@@ -1,26 +1,33 @@
 "use strict";
 
-var L = require("list");
+import * as L from "list"
 
-exports._eq = L.equalsWith;
-exports._append = L.concat;
-exports._mempty = L.empty;
-exports._map = L.map;
-exports._apply = L.ap;
-exports._pure = L.of;
-exports._foldl = L.foldl;
-exports._foldr = L.foldr;
-exports._bind = L.chain;
-exports._traverse = function () {
-  function Cont(fn) {
-    this.fn = fn;
+export const _eq = L.equalsWith;
+
+export const _append = L.concat;
+
+export const _mempty = L.empty;
+
+export const _map = L.map;
+
+export const _apply = L.ap;
+
+export const _pure = L.of;
+
+export const _foldl = L.foldl;
+
+export const _foldr = L.foldr;
+
+export const _bind = L.chain;
+
+export const _traverse = () => {
+  class Cont {
+    constructor(fn) {
+      this.fn = fn;
+    }
   }
 
-  function cons(x) {
-    return function (xs) {
-      return L.prepend(x, xs);
-    };
-  }
+  const cons = (x) => (xs) => L.prepend(x, xs);
 
   return function (apply, map, pure, f) {
     var buildFrom = function (x, ys) {
@@ -47,13 +54,11 @@ exports._traverse = function () {
       return result;
     };
   };
-}();
+}
 
-exports._show = function (f, xs) {
-  return "fromFoldable [" + L.join(", ", L.map(f, xs)) + "]";
-};
+export const _show = (f, xs) => "(RRBList [" + L.join(", ", L.map(f, xs)) + "])";
 
-exports._unfoldr1 = function (isNothing, fromJust, fst, snd, f, b) {
+export const _unfoldr1 = (isNothing, fromJust, fst, snd, f, b) => {
   var result = L.empty();
   var value = b;
   while (true) { // eslint-disable-line no-constant-condition
@@ -68,7 +73,7 @@ exports._unfoldr1 = function (isNothing, fromJust, fst, snd, f, b) {
   }
 };
 
-exports._unfoldr = function (isNothing, fromJust, fst, snd, f, b) {
+export const _unfoldr = (isNothing, fromJust, fst, snd, f, b) => {
   var result = L.empty();
   var value = b;
   while (true) { // eslint-disable-line no-constant-condition

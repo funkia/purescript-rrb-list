@@ -20,7 +20,7 @@
 -- IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 -- CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-module RRBList
+module Data.RRBList
   ( fromFoldable
   , toUnfoldable
   , singleton
@@ -124,8 +124,8 @@ import Data.Tuple (Tuple(Tuple), fst, snd, uncurry)
 import Data.Unfoldable (class Unfoldable, unfoldr)
 import Partial.Unsafe (unsafePartial)
 
-import RRBList.Types (List)
-import RRBList.Types (List) as Exports
+import Data.RRBList.Internal.Types (List)
+import Data.RRBList.Internal.Types (List) as Exports
 
 -- | Convert a `List` into an `Unfoldable` structure.
 toUnfoldable :: forall f. Unfoldable f => List ~> f
