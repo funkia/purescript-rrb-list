@@ -5,17 +5,19 @@ jobs:
   build-rrb-list-library:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out repository code
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - name: Setup nodeJS
+        uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # install dependencies
-      -run: yarn
+      - name: Install dev dependencies
+        run: yarn
 
-      # build the library
-      -run: yarn build
+      - name: Build RRBList
+        run: yarn build
 
-      # test the library
-      -run: yarn test
+      - name: Test RRBList
+        run: yarn test
