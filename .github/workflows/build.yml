@@ -1,0 +1,23 @@
+name: build-rrb-list
+
+run-name: build-rrb-list
+
+on: [push]
+  jobs:
+  build-library:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # install dependencies
+      -run: yarn
+
+      # build the library
+      -run: yarn build
+
+      # test the library
+      -run: yarn test
