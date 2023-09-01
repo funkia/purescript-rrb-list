@@ -1,0 +1,10 @@
+language: node_js
+sudo: required
+node_js:
+  - "18"
+install:
+  - yarn
+script:
+  - bower install --production
+  - yarn build
+  - yarn test
