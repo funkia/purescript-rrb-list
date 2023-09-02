@@ -22,91 +22,89 @@
 -- CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module Data.RRBList
-  ( fromFoldable
-  , toUnfoldable
-  , singleton
-  , (..), range
-  , replicate
-  , some
-  , many
-
-  , null
-  , length
-
-  , nil
-  , (:), cons
-  , snoc
-  , insert
-  , insertBy
-
-  , head
-  , last
-  , tail
-  , init
-  , uncons
-  , unsnoc
-
-  , (!!), index
-  , elemIndex
-  , elemLastIndex
-  , findIndex
-  , findLastIndex
-  , insertAt
-  , deleteAt
-  , updateAt
-  , updateAtIndices
-  , modifyAt
-  , modifyAtIndices
+  ( (!!)
+  , (..)
+  , (:)
+  , (\\)
   , alterAt
-
-  , reverse
+  , catMaybes
   , concat
   , concatMap
-  , filter
-  , partition
-  , filterA
-  , mapMaybe
-  , catMaybes
-  , mapWithIndex
-
-  , sort
-  , sortBy
-  , sortWith
-  , slice
-  , take
-  , takeEnd
-  , takeWhile
+  , cons
+  , delete
+  , deleteAt
+  , deleteBy
+  , difference
   , drop
   , dropEnd
   , dropWhile
-  , span
-  , group
-  , group'
-  , groupBy
-
-  , nub
-  , nubBy
-  , union
-  , unionBy
-  , delete
-  , deleteBy
-
-  , (\\), difference
-  , intersect
-  , intersectBy
-
-  , zipWith
-  , zipWithA
-  , zip
-  , unzip
-
+  , elemIndex
+  , elemLastIndex
+  , filter
+  , filterA
+  , findIndex
+  , findLastIndex
   , foldM
   , foldRecM
-
-  , unsafeIndex
-
+  , fromFoldable
+  , group
+  , group'
+  , groupAll
+  , groupAllBy
+  , groupBy
+  , head
+  , index
+  , init
+  , insert
+  , insertAt
+  , insertBy
+  , intersect
+  , intersectBy
+  , intersperse
+  , last
+  , length
+  , many
+  , mapMaybe
+  , mapWithIndex
+  , modifyAt
+  , modifyAtIndices
   , module Exports
-  ) where
+  , nil
+  , nub
+  , nubBy
+  , nubEq
+  , null
+  , partition
+  , range
+  , replicate
+  , reverse
+  , singleton
+  , slice
+  , snoc
+  , some
+  , sort
+  , sortBy
+  , sortWith
+  , span
+  , tail
+  , take
+  , takeEnd
+  , takeWhile
+  , toUnfoldable
+  , transpose
+  , uncons
+  , union
+  , unionBy
+  , unsafeIndex
+  , unsnoc
+  , unzip
+  , updateAt
+  , updateAtIndices
+  , zip
+  , zipWith
+  , zipWithA
+  )
+  where
 
 import Prelude
 
@@ -119,14 +117,13 @@ import Data.Foldable (foldl, foldr, foldMap, fold, intercalate, elem, notElem, f
 import Data.Function.Uncurried (Fn2, Fn3, mkFn2, runFn2, runFn3)
 import Data.Maybe (Maybe(..), fromJust, isJust, maybe)
 import Data.NonEmpty (NonEmpty, (:|))
+import Data.RRBList.Internal.Types (List)
+import Data.RRBList.Internal.Types (List) as Exports
 import Data.Traversable (scanl, scanr) as Exports
 import Data.Traversable (sequence, traverse)
 import Data.Tuple (Tuple(Tuple), fst, snd, uncurry)
 import Data.Unfoldable (class Unfoldable, unfoldr)
 import Partial.Unsafe (unsafePartial)
-
-import Data.RRBList.Internal.Types (List)
-import Data.RRBList.Internal.Types (List) as Exports
 
 -- | Convert a `List` into an `Unfoldable` structure.
 toUnfoldable :: forall f. Unfoldable f => List ~> f
@@ -134,7 +131,7 @@ toUnfoldable xs = unfoldr f 0
   where
   len = length xs
   f i
-    | i < len   = Just (Tuple (unsafePartial (unsafeIndex xs i)) (i+1))
+    | i < len = Just (Tuple (unsafePartial (unsafeIndex xs i)) (i + 1))
     | otherwise = Nothing
 
 -- | Convert a `Foldable` structure into an `List`.
@@ -235,8 +232,10 @@ insert = insertBy compare
 -- | determine the ordering of elements.
 insertBy :: forall a. (a -> a -> Ordering) -> a -> List a -> List a
 insertBy cmp x ys =
-  let i = maybe 0 (_ + 1) (findLastIndex (\y -> cmp x y == GT) ys)
-  in unsafePartial (fromJust (insertAt i x ys))
+  let
+    i = maybe 0 (_ + 1) (findLastIndex (\y -> cmp x y == GT) ys)
+  in
+    unsafePartial (fromJust (insertAt i x ys))
 
 --------------------------------------------------------------------------------
 -- Non-indexed reads -----------------------------------------------------------
@@ -389,7 +388,7 @@ modifyAt = dischargeNillable (>=) $ runFn3 _modifyAt
 foreign import _modifyAt :: forall a. Fn3 Int (a -> a) (List a) (List a)
 
 -- | Apply a function to the element at the specified indices,
--- | creating a new array. Out-of-bounds indices will have no effect.
+-- | creating a new list. Out-of-bounds indices will have no effect.
 -- |
 -- | Running time: `O(m * log(n))`, where `m` is the number of indices
 -- | and `n` is the length of the list.
@@ -423,6 +422,11 @@ alterAt i f xs = maybe Nothing go (xs !! i)
 -- Transformations -------------------------------------------------------------
 --------------------------------------------------------------------------------
 
+intersperse :: forall a. a -> List a -> List a
+intersperse = runFn2 _intersperse
+
+foreign import _intersperse :: forall a. Fn2 a (List a) (List a)
+
 -- | Reverse a list, creating a new list.
 foreign import reverse :: forall a. List a -> List a
 
@@ -451,7 +455,7 @@ foreign import _filter :: forall a. Fn2 (a -> Boolean) (List a) (List a)
 -- | and one for values that don't.
 partition :: forall a. (a -> Boolean) -> List a -> { yes :: List a, no :: List a }
 partition p xs = unsafePartial $ case runFn2 _partition p xs of
-  [yes, no] -> { yes, no }
+  [ yes, no ] -> { yes, no }
 
 foreign import _partition :: forall a. Fn2 (a -> Boolean) (List a) (Array (List a))
 
@@ -459,7 +463,7 @@ foreign import _partition :: forall a. Fn2 (a -> Boolean) (List a) (Array (List 
 filterA :: forall a f. Applicative f => (a -> f Boolean) -> List a -> f (List a)
 filterA p =
   traverse (\x -> Tuple x <$> p x)
-  >>> map (mapMaybe (\(Tuple x b) -> if b then Just x else Nothing))
+    >>> map (mapMaybe (\(Tuple x b) -> if b then Just x else Nothing))
 
 -- | Apply a function to each element in a list, keeping only the results
 -- | which contain a value, creating a new list.
@@ -578,8 +582,8 @@ span
 span p xs = unsafePartial
   case findLastIndex p xs of
     Nothing -> { init: xs, rest: mempty }
-    Just 0  -> { init: mempty, rest: xs }
-    Just i | [init', rest] <- runFn2 splitAt i xs -> { init: init', rest }
+    Just 0 -> { init: mempty, rest: xs }
+    Just i | [ init', rest ] <- runFn2 splitAt i xs -> { init: init', rest }
 
 foreign import splitAt :: forall a. Fn2 Int (List a) (Array (List a))
 
@@ -591,27 +595,48 @@ group = groupBy eq
 group' :: forall a. Ord a => List a -> List (NonEmpty List a)
 group' = group <<< sort
 
+-- | Group equal elements of an array into arrays.
+groupAll :: forall a. Ord a => List a -> List (NonEmpty List a)
+groupAll = groupAllBy compare
+
 -- | Group equal, consecutive elements of a list into lists, using the
 -- | specified equivalence relation to detemine equality.
 groupBy :: forall a. (a -> a -> Boolean) -> List a -> List (NonEmpty List a)
 groupBy op xs = toNonEmpty <$> (runFn2 _groupBy (mkFn2 op) xs)
   where
-    toNonEmpty xs' = unsafeHead xs' :| unsafeTail xs'
+  toNonEmpty xs' = unsafeHead xs' :| unsafeTail xs'
 
 foreign import _groupBy :: forall a. Fn2 (Fn2 a a Boolean) (List a) (List (List a))
+
+-- | Group equal elements of a list into lists, using the specified
+-- | comparison function to determine equality.
+groupAllBy :: forall a. (a -> a -> Ordering) -> List a -> List (NonEmpty List a)
+groupAllBy cmp = groupBy (\x y -> cmp x y == EQ) <<< sortBy cmp
+
+-- | Remove the duplicates from a list, creating a new list.
+nub :: forall a. Ord a => List a -> List a
+nub = nubBy compare
 
 -- | Remove the duplicates from a list, creating a new list.
 -- |
 -- | Running time: `O(n)`.
-nub :: forall a. Eq a => List a -> List a
-nub = nubBy eq
+nubEq :: forall a. Eq a => List a -> List a
+nubEq = nubByEq eq
+
+-- | Remove the duplicates from a list, where element equality is determined
+-- | by the specified ordering, creating a new list.
+nubBy :: forall a. (a -> a -> Ordering) -> List a -> List a
+nubBy cmp xs =
+  case uncons xs of
+    Just o -> o.head : nubBy cmp (filter (\y -> not ((cmp o.head y) == EQ)) o.tail)
+    Nothing -> mempty
 
 -- | Remove the duplicates from a list, where element equality is determined
 -- | by the specified equivalence relation, creating a new list.
-nubBy :: forall a. (a -> a -> Boolean) -> List a -> List a
-nubBy eq xs =
+nubByEq :: forall a. (a -> a -> Boolean) -> List a -> List a
+nubByEq eq xs =
   case uncons xs of
-    Just o -> o.head : nubBy eq (filter (\y -> not (o.head `eq` y)) o.tail)
+    Just o -> o.head : nubByEq eq (filter (\y -> not (o.head `eq` y)) o.tail)
     Nothing -> mempty
 
 -- | Calculate the union of two lists. Note that duplicates in the first list
@@ -627,7 +652,7 @@ union = unionBy (==)
 -- |
 -- | Running time: `O(n^2)`.
 unionBy :: forall a. (a -> a -> Boolean) -> List a -> List a -> List a
-unionBy eq xs ys = xs <> foldl (flip (deleteBy eq)) (nubBy eq ys) xs
+unionBy eq xs ys = xs <> foldl (flip (deleteBy eq)) (nubByEq eq ys) xs
 
 -- | Delete the first element of a list which is equal to the specified value,
 -- | creating a new list.
@@ -635,6 +660,22 @@ unionBy eq xs ys = xs <> foldl (flip (deleteBy eq)) (nubBy eq ys) xs
 -- | Running time: `O(n)`
 delete :: forall a. Eq a => a -> List a -> List a
 delete = deleteBy eq
+
+-- | The 'transpose' function transposes the rows and columns of its argument.
+-- | For example,
+transpose :: forall a. List (List a) -> List (List a)
+transpose xs = go 0 mempty
+  where
+  go :: Int -> List (List a) -> List (List a)
+  go idx arrAcc = case nextCols idx of
+    Nothing -> arrAcc
+    Just next -> go (idx + 1) (snoc arrAcc next)
+
+  nextCols :: Int -> Maybe (List a)
+  nextCols idx = do
+    do
+      xs # flip foldl Nothing \acc nextList -> do
+        maybe acc (\el -> Just $ maybe (singleton el) (flip snoc el) acc) $ index nextList idx
 
 -- | Delete the first element of a list which matches the specified value,
 -- | under the equivalence relation provided in the first argument, creating a
@@ -715,7 +756,6 @@ unzip xs = Tuple (fst <$> xs) (snd <$> xs)
 -- | Perform a fold using a monadic step function.
 foldM :: forall m a b. Monad m => (a -> b -> m a) -> a -> List b -> m a
 foldM f a = uncons' (\_ -> pure a) (\b bs -> f a b >>= \a' -> foldM f a' bs)
-
 
 foldRecM :: forall m a b. MonadRec m => (a -> b -> m a) -> a -> List b -> m a
 foldRecM f a xs = tailRecM2 go a 0

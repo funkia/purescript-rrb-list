@@ -58,6 +58,8 @@ export const _slice = L.slice;
 
 export const _partition = L.partition;
 
+export const _intersperse = L.intersperse;
+
 // The names of these three functions are flipped in purescript-arrays and funkia/list.
 export const _sortBy = L.sortWith;
 export const _sortWith = L.sortBy;

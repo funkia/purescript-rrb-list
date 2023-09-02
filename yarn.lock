@@ -287,11 +287,6 @@ concat-stream@^1.5.0:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
-control@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.npmjs.org/control/-/control-0.2.3.tgz#4130a1943124d6162260c97f4586e3ed625782dd"
-  integrity sha512-ZjW9B0kBZ8XESUSV6I6p8VHY3NcpXuXCy1qWLFDslufsrbBIhTz2RGqqeIUk/KYKK4Xx3kIGLj2nh+Dg+0DgPw==
-
 copy-concurrently@^1.0.0:
   version "1.0.5"
   resolved "https://registry.npmjs.org/copy-concurrently/-/copy-concurrently-1.0.5.tgz#92297398cae34937fcafd6ec8139c18051f0b5e0"
@@ -626,7 +621,7 @@ jackspeak@^2.0.3:
   optionalDependencies:
     "@pkgjs/parseargs" "^0.11.0"
 
-list@^2.0.x:
+list@2.0.19:
   version "2.0.19"
   resolved "https://registry.npmjs.org/list/-/list-2.0.19.tgz#370a3d7d3e24cfd5ced2c89cda2baf28e31e2830"
   integrity sha512-nnVaRp4RaMAQkCpypTThsdxKqgPMiSwJq93eAm2/IbpUa8sd04XKBhkKu+bMk63HmdjK8b8Cuh4xARHWX2ye/Q==
@@ -1019,6 +1014,11 @@ purescript@0.15.10:
   integrity sha512-USvNla7eWMsIcbcQJ6jNiHduiXzKT+d3Cc9hjTffZ/9fHHZaMUf+k4TXbh+/OtecDEfPu736Ky51VX4bRj4iiA==
   dependencies:
     purescript-installer "^0.3.5"
+
+purs-tidy@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.npmjs.org/purs-tidy/-/purs-tidy-0.10.0.tgz#01a3e7c88d1909c56e31098fad6a8f61933ecc7f"
+  integrity sha512-ULbJfBHRngczYwcOzugytRiNy+Guy2VXoAG1jMtGaSFEaUZk1lZkKU11t8jIZTrDdOrkgqlWCZLi3mfcHvdimA==
 
 "readable-stream@1 || 2", readable-stream@^2.0.0, readable-stream@^2.1.5, readable-stream@^2.2.2, readable-stream@^2.3.6, readable-stream@~2.3.6:
   version "2.3.8"

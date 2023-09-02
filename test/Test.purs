@@ -20,8 +20,13 @@ import Test.Spec.Runner (runSpec)
 _ListArrIso :: ∀ a. Iso' (L.List a) (Array a)
 _ListArrIso = iso (A.fromFoldable) (L.fromFoldable)
 
+transposeTest :: Array (Array Int) -> Boolean
+transposeTest arr = let
+  lst = (review _ListArrIso $ (review _ListArrIso) <$> arr)
+  in (view _ListArrIso $ (view _ListArrIso) <$> L.transpose lst) == A.transpose arr
+
 main :: Effect Unit
-main = launchAff_ $ runSpec [consoleReporter] do
+main = launchAff_ $ runSpec [ consoleReporter ] do
   describe "purescript-rrb-list" do
     describe "unfold" $ do
       it "replicates value" do
@@ -39,3 +44,12 @@ main = launchAff_ $ runSpec [consoleReporter] do
     describe "map" do
       it "passes quickcheck for map" do
         liftEffect $ quickCheck (\((arr /\ inc) :: (Array Int /\ Int)) -> ((view _ListArrIso $ map ((+) inc) (review _ListArrIso arr)) == map ((+) inc) arr))
+    describe "filter" do
+      it "passes quickcheck for filter" do
+        liftEffect $ quickCheck (\((arr /\ pred) :: (Array Int /\ (Int -> Boolean))) -> ((view _ListArrIso $ L.filter pred (review _ListArrIso arr)) == A.filter pred arr))
+    describe "intersperse" do
+      it "passes quickcheck for intersperse" do
+        liftEffect $ quickCheck (\((arr /\ a) :: Array Int /\ Int) -> (view _ListArrIso $ L.intersperse a (review _ListArrIso arr)) == A.intersperse a arr)
+    describe "transpose" do
+      it "transposes a list of lists" do
+        liftEffect $ quickCheck (\((arr) :: Array (Array Int)) -> transposeTest arr)

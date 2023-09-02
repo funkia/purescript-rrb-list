@@ -22,6 +22,7 @@
   "devDependencies": {
     "purescript": "0.15.10",
     "purescript-psa": "^0.8.2",
+    "purs-tidy": "^0.10.0",
     "spago": "^0.21.0"
   }
 }
