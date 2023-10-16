@@ -1,0 +1,38 @@
+name: build-rrb-list
+run-name: build-rrb-list
+on: [push]
+jobs:
+  build-rrb-list:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup nodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dev dependencies
+        run: yarn install
+
+      - name: Build RRBList
+        run: yarn build
+
+
+  test-rrb-list:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup nodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dev dependencies
+        run: yarn install
+
+      - name: Test RRBList
+        run: yarn test

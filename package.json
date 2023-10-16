@@ -7,13 +7,22 @@
     "test": "test"
   },
   "scripts": {
-    "test": "pulp test",
-    "build": "pulp build"
+    "test": "spago -x test.dhall test --purs-args \"--strict --stash\"",
+    "build": "spago build --purs-args \"--strict --stash\""
   },
   "author": "Gabe Johnson",
+  "contributors": [
+    "Nathan Waltz <waltznr@gmail.com>"
+  ],
   "license": "MIT",
   "dependencies": {
-    "list": "^2.0.x"
+    "list": "2.0.19"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "purescript": "0.15.10",
+    "purescript-psa": "^0.8.2",
+    "purs-tidy": "^0.10.0",
+    "spago": "^0.21.0"
+  }
 }
