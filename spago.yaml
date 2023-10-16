@@ -1,0 +1,38 @@
+package:
+  name: rrb-list
+  dependencies:
+    - control: ">=6.0.0 <7.0.0"
+    - foldable-traversable: ">=6.0.0 <7.0.0"
+    - functions: ">=6.0.0 <7.0.0"
+    - maybe: ">=6.0.0 <7.0.0"
+    - nonempty: ">=7.0.0 <8.0.0"
+    - partial: ">=4.0.0 <5.0.0"
+    - prelude: ">=6.0.1 <7.0.0"
+    - tailrec: ">=6.1.0 <7.0.0"
+    - tuples: ">=7.0.0 <8.0.0"
+    - unfoldable: ">=6.0.0 <7.0.0"
+  build:
+    pedantic_packages: true
+    strict: true
+  test:
+    dependencies:
+      - aff
+      - arrays
+      - effect
+      - arrays
+      - profunctor-lenses
+      - quickcheck
+      - spec
+    main: Test.Main
+    strict: true
+  publish:
+    version: 1.0.0
+    license: MIT
+    location:
+      githubOwner: funkia
+      githubRepo: "purescript-rrb-list"
+workspace:
+  extra_packages: {}
+  package_set:
+    registry: 43.1.0
+
