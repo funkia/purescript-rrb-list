@@ -7,8 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "spago -x test.dhall test --purs-args \"--strict --stash\"",
-    "build": "spago build --purs-args \"--strict --stash\""
+    "test": "spago build && spago run --main Test.Main",
+    "build": "spago build"
   },
   "author": "Gabe Johnson",
   "contributors": [
@@ -21,8 +21,7 @@
   "private": true,
   "devDependencies": {
     "purescript": "0.15.10",
-    "purescript-psa": "^0.8.2",
     "purs-tidy": "^0.10.0",
-    "spago": "^0.21.0"
+    "spago": "^0.93.18"
   }
 }
